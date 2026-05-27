@@ -52,9 +52,9 @@ async function signin(data: AuthSigninReqInterface) {
   }
 }
 
-function onFormSubmit({ valid, values }: FormSubmitEvent<AuthSigninReqInterface>) {
+function onFormSubmit({ valid, values }: FormSubmitEvent) {
   if (!valid) return
-  signin(values)
+  signin(values as AuthSigninReqInterface)
 }
 </script>
 

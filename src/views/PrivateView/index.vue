@@ -14,10 +14,14 @@ const sidebarOpen = ref(false)
 
 const navigation = [
   {
-    label: 'Painel',
-    description: 'Resumo da área autenticada',
-    icon: 'pi pi-th-large',
-    to: '/app',
+    label: 'Usuários',
+    icon: 'pi pi-users',
+    to: '/app/users',
+  },
+  {
+    label: 'Anúncios',
+    icon: 'pi pi-bell',
+    to: '/app/ads',
   },
 ]
 
@@ -36,14 +40,14 @@ onBeforeMount(() => {
       v-model:open="sidebarOpen"
       :user="userStore.user"
       :navigation="navigation"
-      title="Central do aluno"
+      title="Central administrativo"
       subtitle="Sakai-inspired"
     />
 
     <div class="flex min-h-full min-w-0 flex-1 flex-col">
       <Navbar
         :user="userStore.user"
-        title="Central do aluno"
+        title="Central administrativo"
         @menu-click="sidebarOpen = true"
         @logout="logout"
       />

@@ -2,11 +2,11 @@
 defineOptions({ name: 'CompPrivateNavbar' })
 
 import Button from 'primevue/button'
-import Avatar from 'primevue/avatar'
 import ConfirmPopup from 'primevue/confirmpopup'
 import { useConfirm } from 'primevue/useconfirm'
 
 import type UserMeResInterface from '@/domain/user/types/res/UserMeResInterface'
+import Avatar from '../Avatar.vue'
 
 interface Props {
   user: UserMeResInterface['me'] | null
@@ -20,17 +20,6 @@ const emit = defineEmits<{
   menuClick: []
   logout: []
 }>()
-
-function getInitials(name: string | undefined): string {
-  if (!name) return 'US'
-
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('')
-}
 
 function confirmLogout(event: PointerEvent): void {
   confirm.require({
@@ -89,12 +78,7 @@ function confirmLogout(event: PointerEvent): void {
           </p>
         </div>
 
-        <Avatar
-          :label="getInitials(user?.name)"
-          :image="user?.avatarUrl || undefined"
-          shape="circle"
-          class="border border-slate-200 bg-slate-100 text-sm text-slate-700"
-        />
+        <Avatar :username="user?.name" :src-img="user?.avatarUrl" class="max-w-10! max-h-10!" />
 
         <Button
           icon="pi pi-sign-out"

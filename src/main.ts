@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import ToastService from 'primevue/toastservice'
 import ConfirmationService from 'primevue/confirmationservice'
-import Aura from '@primeuix/themes/aura'
+import { AppPreset } from './assets/styles/preset'
 import './assets/styles/main.css'
 
 import App from './App.vue'
@@ -15,10 +15,10 @@ app.use(createPinia())
 app.use(router)
 app.use(PrimeVue, {
   theme: {
-    preset: Aura,
+    preset: AppPreset,
     options: {
       prefix: 'p',
-      darkModeSelector: false,
+      darkModeSelector: '.dark',
       cssLayer: false,
     },
   },

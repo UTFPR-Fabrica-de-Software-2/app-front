@@ -94,14 +94,6 @@ function onFormSubmit({ valid, values }: FormSubmitEvent) {
             }}</Message>
           </section>
         </FormField>
-        <Button
-          severity="info"
-          size="small"
-          link
-          label="Cadastrar"
-          class="w-3 self-end"
-          @click="$router.push({ name: 'public.auth.signup' })"
-        />
         <Button type="submit" severity="success" label="Acessar" />
       </Form>
     </template>

@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 import authRoutes from '@/router/public/authRoutes'
+import userRoutes from '@/router/private/userRoutes'
+import adsRoutes from '@/router/private/adsRoutes'
 
 const PublicView = () => import('@/views/PublicView/index.vue')
 const PrivateView = () => import('@/views/PrivateView/index.vue')
@@ -36,11 +38,16 @@ const router = createRouter({
       path: '/app',
       name: 'app',
       component: PrivateView,
+      redirect: '/app/users',
       beforeEnter: (_to, _from) => {
         if (!isAuthenticated()) return { path: '/', replace: true }
       },
-      // add private child routes here
-      children: [],
+      children: [...userRoutes, ...adsRoutes],
+    },
+
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/',
     },
   ],
 })

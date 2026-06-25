@@ -287,7 +287,7 @@ function deleteAd(ad: AdListItem): void {
       <template #grid="{ items }">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <article
-            v-for="ad in (items as AdListItem[])"
+            v-for="ad in items as AdListItem[]"
             :key="ad.id"
             role="button"
             tabindex="0"

@@ -234,7 +234,10 @@ function deleteUser(user: UserListItem): void {
 
       <Column field="role" header="Perfil" sortable>
         <template #body="{ data }">
-          <Tag :value="ROLE_META[data.role as UserRole].label" :severity="ROLE_META[data.role as UserRole].severity" />
+          <Tag
+            :value="ROLE_META[data.role as UserRole].label"
+            :severity="ROLE_META[data.role as UserRole].severity"
+          />
         </template>
       </Column>
 

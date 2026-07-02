@@ -363,7 +363,10 @@ fetchListings()
             </div>
           </template>
         </Carousel>
-        <div v-else class="flex h-48 w-full items-center justify-center rounded-xl bg-slate-100 text-slate-300">
+        <div
+          v-else
+          class="flex h-48 w-full items-center justify-center rounded-xl bg-slate-100 text-slate-300"
+        >
           <i class="pi pi-image text-5xl" />
         </div>
 

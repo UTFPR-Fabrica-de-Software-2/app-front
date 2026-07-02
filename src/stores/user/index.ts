@@ -20,5 +20,27 @@ export const useUserStore = defineStore('user', {
         throw err
       }
     },
+
+    async actFindAllUsers() {
+      const USER_SERVICE = new UserService()
+
+      try {
+        const { data } = await USER_SERVICE.findAll()
+        return data
+      } catch (err) {
+        throw err
+      }
+    },
+
+    async actDeleteUser(id: string) {
+      const USER_SERVICE = new UserService()
+
+      try {
+        const { data } = await USER_SERVICE.delete(id)
+        return data
+      } catch (err) {
+        throw err
+      }
+    },
   },
 })

@@ -14,187 +14,80 @@ import Tag from 'primevue/tag'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import Divider from 'primevue/divider'
+import Carousel from 'primevue/carousel'
 import ConfirmDialog from 'primevue/confirmdialog'
 
-type AdStatus = 'ACTIVE' | 'INACTIVE'
-type AdCondition = 'NEW' | 'USED'
-type AdType = 'PRODUCT' | 'SERVICE'
-type AdCategory = 'FOOD' | 'ELECTRONICS' | 'BOOKS' | 'CLOTHING' | 'SERVICES' | 'OTHERS'
-
-interface AdSeller {
-  id: string
-  name: string
-  email: string
-}
-
-interface AdListItem {
-  id: string
-  title: string
-  description?: string
-  price: number
-  category: AdCategory
-  condition: AdCondition
-  type: AdType
-  status: AdStatus
-  seller: AdSeller
-  viewsCount: number
-  location?: string
-  createdAt: string
-  images: string[]
-}
+import { useListingStore } from '@/stores/listing'
+import type ListingInterface from '@/domain/listing/types/ListingInterface'
 
 const toast = useToast()
 const confirm = useConfirm()
+const listingStore = useListingStore()
 
-const STATUS_META: Record<AdStatus, { label: string; severity: 'success' | 'secondary' }> = {
+const STATUS_META: Record<string, { label: string; severity: 'success' | 'secondary' }> = {
   ACTIVE: { label: 'Ativo', severity: 'success' },
   INACTIVE: { label: 'Inativo', severity: 'secondary' },
 }
 
-const CATEGORY_META: Record<AdCategory, string> = {
-  FOOD: 'Alimentação',
-  ELECTRONICS: 'Eletrônicos',
-  BOOKS: 'Livros',
-  CLOTHING: 'Vestuário',
-  SERVICES: 'Serviços',
-  OTHERS: 'Outros',
-}
-
-const CONDITION_META: Record<AdCondition, string> = {
+const CONDITION_META: Record<string, string> = {
   NEW: 'Novo',
   USED: 'Usado',
 }
 
-const TYPE_META: Record<AdType, string> = {
+const TYPE_META: Record<string, string> = {
   PRODUCT: 'Produto',
   SERVICE: 'Serviço',
 }
 
-// TODO: substituir pelos dados vindos do endpoint do back-end.
-const ads = ref<AdListItem[]>([
-  {
-    id: '001',
-    title: 'Salada de rabanete',
-    description: 'Salada fresca de rabanete colhida no dia, ideal para um almoço leve no campus.',
-    price: 12,
-    category: 'FOOD',
-    condition: 'NEW',
-    type: 'PRODUCT',
-    status: 'ACTIVE',
-    seller: { id: 'u1', name: 'Paula Almeida', email: 'paula.almeida@utfpr.edu.br' },
-    viewsCount: 134,
-    location: 'Em frente ao Restaurante Universitário',
-    createdAt: '2026-03-10T10:00:00Z',
-    images: ['https://picsum.photos/seed/rabanete/600/600'],
-  },
-  {
-    id: '002',
-    title: 'Calculadora HP 50g',
-    description: 'Calculadora gráfica em ótimo estado, perfeita para os cálculos da engenharia.',
-    price: 350,
-    category: 'ELECTRONICS',
-    condition: 'USED',
-    type: 'PRODUCT',
-    status: 'ACTIVE',
-    seller: { id: 'u2', name: 'Lucas Ferreira', email: 'lucas.ferreira@alunos.utfpr.edu.br' },
-    viewsCount: 87,
-    location: 'Bloco K - Sala 12',
-    createdAt: '2026-02-22T10:00:00Z',
-    images: ['https://picsum.photos/seed/calculadora/600/600'],
-  },
-  {
-    id: '003',
-    title: 'Aulas particulares de Cálculo',
-    description: 'Reforço de Cálculo 1 e 2 com material próprio. Aulas presenciais ou online.',
-    price: 60,
-    category: 'SERVICES',
-    condition: 'NEW',
-    type: 'SERVICE',
-    status: 'ACTIVE',
-    seller: { id: 'u3', name: 'Patricia Souza', email: 'patricia.souza@utfpr.edu.br' },
-    viewsCount: 212,
-    location: 'Online',
-    createdAt: '2025-11-11T10:00:00Z',
-    images: ['https://picsum.photos/seed/aulas/600/600'],
-  },
-  {
-    id: '004',
-    title: 'Coleção de livros de Algoritmos',
-    price: 180,
-    category: 'BOOKS',
-    condition: 'USED',
-    type: 'PRODUCT',
-    status: 'INACTIVE',
-    seller: { id: 'u4', name: 'Kevin Oliveira', email: 'kevin.oliveira@alunos.utfpr.edu.br' },
-    viewsCount: 45,
-    createdAt: '2025-07-17T10:00:00Z',
-    images: ['https://picsum.photos/seed/livros/600/600'],
-  },
-  {
-    id: '005',
-    title: 'Jaqueta da Atlética',
-    description: 'Jaqueta oficial da atlética, tamanho M, usada poucas vezes.',
-    price: 120,
-    category: 'CLOTHING',
-    condition: 'USED',
-    type: 'PRODUCT',
-    status: 'ACTIVE',
-    seller: { id: 'u5', name: 'Amanda Lima', email: 'amanda.lima@alunos.utfpr.edu.br' },
-    viewsCount: 98,
-    location: 'Bloco da Atlética',
-    createdAt: '2026-01-05T10:00:00Z',
-    images: ['https://picsum.photos/seed/jaqueta/600/600'],
-  },
-  {
-    id: '006',
-    title: 'Marmitas fitness sob encomenda',
-    description: 'Marmitas balanceadas preparadas semanalmente. Encomende seu combo.',
-    price: 22,
-    category: 'FOOD',
-    condition: 'NEW',
-    type: 'SERVICE',
-    status: 'ACTIVE',
-    seller: { id: 'u6', name: 'Paulo Mendes', email: 'paulo.mendes@utfpr.edu.br' },
-    viewsCount: 320,
-    location: 'Entrega no campus',
-    createdAt: '2025-09-30T10:00:00Z',
-    images: ['https://picsum.photos/seed/marmita/600/600'],
-  },
-])
+function statusMeta(status: string): { label: string; severity: 'success' | 'secondary' } {
+  return STATUS_META[status] ?? { label: status, severity: 'secondary' }
+}
+function conditionLabel(condition: string): string {
+  return CONDITION_META[condition] ?? condition
+}
+function typeLabel(type: string): string {
+  return TYPE_META[type] ?? type
+}
+
+const listings = ref<ListingInterface[]>([])
+const loading = ref(false)
 
 const search = ref('')
-const statusFilter = ref<AdStatus | null>(null)
-const categoryFilter = ref<AdCategory | null>(null)
+const statusFilter = ref<string | null>(null)
+const categoryFilter = ref<string | null>(null)
 
-const statusOptions = (Object.keys(STATUS_META) as AdStatus[]).map((value) => ({
+const statusOptions = Object.entries(STATUS_META).map(([value, meta]) => ({
   value,
-  label: STATUS_META[value].label,
-}))
-const categoryOptions = (Object.keys(CATEGORY_META) as AdCategory[]).map((value) => ({
-  value,
-  label: CATEGORY_META[value],
+  label: meta.label,
 }))
 
-const filteredAds = computed(() => {
+const categoryOptions = computed(() => {
+  const map = new Map<string, string>()
+  for (const listing of listings.value) map.set(listing.categoryId, listing.category.name)
+  return [...map].map(([value, label]) => ({ value, label }))
+})
+
+const filteredListings = computed(() => {
   const term = search.value.trim().toLowerCase()
 
-  return ads.value.filter((ad) => {
+  return listings.value.filter((listing) => {
     const matchesTerm =
       !term ||
-      ad.title.toLowerCase().includes(term) ||
-      (ad.description?.toLowerCase().includes(term) ?? false) ||
-      (ad.location?.toLowerCase().includes(term) ?? false) ||
-      ad.seller.name.toLowerCase().includes(term)
-    const matchesStatus = !statusFilter.value || ad.status === statusFilter.value
-    const matchesCategory = !categoryFilter.value || ad.category === categoryFilter.value
+      listing.title.toLowerCase().includes(term) ||
+      (listing.description?.toLowerCase().includes(term) ?? false) ||
+      (listing.location?.toLowerCase().includes(term) ?? false) ||
+      listing.seller.name.toLowerCase().includes(term) ||
+      listing.category.name.toLowerCase().includes(term)
+    const matchesStatus = !statusFilter.value || listing.status === statusFilter.value
+    const matchesCategory = !categoryFilter.value || listing.categoryId === categoryFilter.value
 
     return matchesTerm && matchesStatus && matchesCategory
   })
 })
 
 const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
-function formatPrice(value: number): string {
-  return currencyFormatter.format(value)
+function formatPrice(value: string | number): string {
+  return currencyFormatter.format(Number(value))
 }
 
 const dateFormatter = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' })
@@ -202,173 +95,286 @@ function formatDate(value: string): string {
   return dateFormatter.format(new Date(value))
 }
 
-function coverImage(ad: AdListItem): string | undefined {
-  return ad.images[0]
+const dateTimeFormatter = new Intl.DateTimeFormat('pt-BR', {
+  dateStyle: 'long',
+  timeStyle: 'short',
+})
+function formatDateTime(value: string): string {
+  return dateTimeFormatter.format(new Date(value))
 }
 
-const selectedAd = ref<AdListItem | null>(null)
+function coverImage(listing: ListingInterface): string | undefined {
+  return listing.images[0]?.url
+}
+
+const selectedAd = ref<ListingInterface | null>(null)
 const detailsVisible = ref(false)
+const detailLoading = ref(false)
 
-function openDetails(ad: AdListItem): void {
-  selectedAd.value = ad
+const showUpdatedAt = computed(
+  () => !!selectedAd.value && selectedAd.value.updatedAt !== selectedAd.value.createdAt,
+)
+
+async function openDetails(listing: ListingInterface): Promise<void> {
+  selectedAd.value = null
   detailsVisible.value = true
+  detailLoading.value = true
+
+  try {
+    const { listing: fresh } = await listingStore.actFindOneListing(listing.id)
+    selectedAd.value = fresh
+  } catch {
+    detailsVisible.value = false
+    toast.add({
+      severity: 'error',
+      summary: 'Erro ao carregar anúncio',
+      detail: 'Não foi possível carregar os detalhes do anúncio.',
+      life: 3000,
+    })
+  } finally {
+    detailLoading.value = false
+  }
 }
 
-function confirmDelete(ad: AdListItem, event?: Event): void {
+function confirmDelete(listing: ListingInterface, event?: Event): void {
   event?.stopPropagation()
   confirm.require({
     header: 'Excluir anúncio',
-    message: `Tem certeza que deseja excluir "${ad.title}"? Esta ação não poderá ser desfeita.`,
+    message: `Tem certeza que deseja excluir "${listing.title}"? Esta ação não poderá ser desfeita.`,
     icon: 'pi pi-exclamation-triangle',
     rejectProps: { label: 'Cancelar', severity: 'secondary', outlined: true },
     acceptProps: { label: 'Excluir', severity: 'danger' },
-    accept: () => deleteAd(ad),
+    accept: () => deleteAd(listing),
   })
 }
 
-function deleteAd(ad: AdListItem): void {
-  // TODO: chamar o endpoint de exclusão do back-end.
-  ads.value = ads.value.filter((item) => item.id !== ad.id)
-  if (selectedAd.value?.id === ad.id) detailsVisible.value = false
-  toast.add({
-    severity: 'success',
-    summary: 'Anúncio excluído',
-    detail: `"${ad.title}" foi removido com sucesso.`,
-    life: 3000,
-  })
+async function deleteAd(listing: ListingInterface): Promise<void> {
+  try {
+    await listingStore.actDeleteListing(listing.id)
+    listings.value = listings.value.filter((item) => item.id !== listing.id)
+    if (selectedAd.value?.id === listing.id) detailsVisible.value = false
+    toast.add({
+      severity: 'success',
+      summary: 'Anúncio excluído',
+      detail: `"${listing.title}" foi removido com sucesso.`,
+      life: 3000,
+    })
+  } catch {
+    toast.add({
+      severity: 'error',
+      summary: 'Erro ao excluir anúncio',
+      detail: 'Não foi possível excluir o anúncio.',
+      life: 3000,
+    })
+  }
 }
+
+async function fetchListings(): Promise<void> {
+  loading.value = true
+  try {
+    const { listings: data } = await listingStore.actFindAllListings()
+    listings.value = data
+  } catch {
+    toast.add({
+      severity: 'error',
+      summary: 'Erro ao carregar anúncios',
+      detail: 'Não foi possível carregar a lista de anúncios.',
+      life: 3000,
+    })
+  } finally {
+    loading.value = false
+  }
+}
+
+fetchListings()
 </script>
 
 <template>
-  <section class="space-y-4">
-    <header class="flex flex-col gap-1">
-      <h1 class="text-2xl font-semibold text-slate-900">Anúncios</h1>
-      <p class="text-sm text-slate-500">
-        Visualize, pesquise e gerencie os anúncios cadastrados no sistema.
-      </p>
+  <section class="space-y-6">
+    <header
+      class="flex items-center gap-4 bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100"
+    >
+      <h1 class="text-xl font-bold text-slate-900 tracking-tight">Anúncios</h1>
     </header>
 
     <ConfirmDialog />
 
     <div
-      class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center"
+      class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100"
     >
-      <IconField class="w-full sm:flex-1">
-        <InputIcon class="pi pi-search" />
-        <InputText v-model="search" placeholder="Pesquise aqui" class="w-full" />
-      </IconField>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center mb-6">
+        <IconField class="w-full sm:flex-1">
+          <InputIcon class="pi pi-search text-slate-400" />
+          <InputText
+            v-model="search"
+            placeholder="Pesquise aqui"
+            class="w-full rounded-xl bg-slate-50 border-none px-10 py-3 text-slate-700 focus:ring-2 focus:ring-slate-200"
+          />
+        </IconField>
 
-      <Select
-        v-model="statusFilter"
-        :options="statusOptions"
-        option-label="label"
-        option-value="value"
-        placeholder="Todos os estatus"
-        show-clear
-        class="w-full sm:w-56"
-      />
+        <Select
+          v-model="statusFilter"
+          :options="statusOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="Todos os status"
+          show-clear
+          class="w-full sm:w-56 rounded-xl bg-slate-50 border-none shadow-none"
+        />
 
-      <Select
-        v-model="categoryFilter"
-        :options="categoryOptions"
-        option-label="label"
-        option-value="value"
-        placeholder="Todas as categorias"
-        show-clear
-        class="w-full sm:w-56"
-      />
+        <Select
+          v-model="categoryFilter"
+          :options="categoryOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="Todas as categorias"
+          show-clear
+          class="w-full sm:w-56 rounded-xl bg-slate-50 border-none shadow-none"
+        />
+      </div>
+
+      <DataView :value="filteredListings" data-key="id" paginator :rows="9" layout="grid">
+        <template #empty>
+          <div class="py-12 text-center text-slate-500">
+            {{ loading ? 'Carregando anúncios...' : 'Nenhum anúncio encontrado.' }}
+          </div>
+        </template>
+
+        <template #grid="{ items }">
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <article
+              v-for="ad in items as ListingInterface[]"
+              :key="ad.id"
+              role="button"
+              tabindex="0"
+              class="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:shadow-md"
+              @click="openDetails(ad)"
+              @keydown.enter="openDetails(ad)"
+              @keydown.space.prevent="openDetails(ad)"
+            >
+              <div class="relative h-48 overflow-hidden bg-slate-50 p-4">
+                <img
+                  v-if="coverImage(ad)"
+                  :src="coverImage(ad)"
+                  :alt="ad.title"
+                  class="h-full w-full object-cover rounded-xl transition duration-300 group-hover:scale-105"
+                />
+                <div v-else class="flex h-full w-full items-center justify-center text-slate-300">
+                  <i class="pi pi-image text-3xl" />
+                </div>
+              </div>
+
+              <div class="flex flex-1 flex-col p-5">
+                <h2
+                  class="font-bold text-slate-900 text-lg tracking-tight line-clamp-1"
+                  v-tooltip.top="ad.title"
+                >
+                  {{ ad.title }}
+                </h2>
+
+                <p
+                  v-if="ad.description"
+                  class="mt-1 line-clamp-1 text-sm text-slate-500"
+                  v-tooltip.top="ad.description"
+                >
+                  {{ ad.description }}
+                </p>
+
+                <p
+                  class="mt-1 line-clamp-1 font-semibold text-slate-700"
+                  v-tooltip.top="formatPrice(ad.price)"
+                >
+                  {{ formatPrice(ad.price) }}
+                </p>
+
+                <p
+                  v-if="ad.location"
+                  class="mt-2 line-clamp-1 text-xs font-medium text-slate-500"
+                  v-tooltip.top="ad.location"
+                >
+                  <i class="pi pi-map-marker mr-1 text-[10px]" />{{ ad.location }}
+                </p>
+
+                <p
+                  class="mt-1 line-clamp-1 text-xs font-medium text-slate-400"
+                  v-tooltip.top="`Publicado em ${formatDate(ad.createdAt)}`"
+                >
+                  <i class="pi pi-calendar mr-1 text-[10px]" />{{ formatDate(ad.createdAt) }}
+                </p>
+
+                <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div class="flex min-w-0 flex-col gap-0.5">
+                    <span
+                      class="line-clamp-1 text-xs font-bold text-slate-700"
+                      v-tooltip.top="ad.seller.name"
+                    >
+                      {{ ad.seller.name }}
+                    </span>
+                    <span
+                      class="line-clamp-1 text-[10px] uppercase font-bold text-slate-400"
+                      v-tooltip.top="ad.category.name"
+                    >
+                      {{ ad.category.name }}
+                    </span>
+                  </div>
+                  <div class="flex shrink-0 items-center gap-2">
+                    <span class="text-[10px] font-semibold text-slate-400 flex items-center gap-1">
+                      <i class="pi pi-eye text-[10px]" /> {{ ad.viewsCount }}
+                    </span>
+                    <i class="pi pi-external-link text-slate-400 ml-2" />
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </template>
+      </DataView>
     </div>
 
-    <DataView :value="filteredAds" data-key="id" paginator :rows="9" layout="grid">
-      <template #empty>
-        <div class="py-12 text-center text-slate-500">Nenhum anúncio encontrado.</div>
+    <Dialog v-model:visible="detailsVisible" modal dismissable-mask class="w-full max-w-2xl">
+      <template #header>
+        <span
+          v-if="selectedAd"
+          class="block max-w-[90%] truncate text-lg font-semibold text-slate-900"
+          v-tooltip.bottom="selectedAd.title"
+        >
+          {{ selectedAd.title }}
+        </span>
+        <span v-else class="text-lg font-semibold text-slate-400">Carregando...</span>
       </template>
 
-      <template #grid="{ items }">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <article
-            v-for="ad in items as AdListItem[]"
-            :key="ad.id"
-            role="button"
-            tabindex="0"
-            class="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 hover:shadow-md"
-            @click="openDetails(ad)"
-            @keydown.enter="openDetails(ad)"
-            @keydown.space.prevent="openDetails(ad)"
-          >
-            <div class="relative h-40 overflow-hidden bg-slate-100">
-              <img
-                v-if="coverImage(ad)"
-                :src="coverImage(ad)"
-                :alt="ad.title"
-                class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-              />
-              <div v-else class="flex h-full w-full items-center justify-center text-slate-300">
-                <i class="pi pi-image text-3xl" />
-              </div>
+      <div v-if="detailLoading" class="flex items-center justify-center gap-2 py-16 text-slate-500">
+        <i class="pi pi-spin pi-spinner text-2xl" />
+        <span>Carregando detalhes...</span>
+      </div>
 
-              <Tag
-                :value="STATUS_META[ad.status].label"
-                :severity="STATUS_META[ad.status].severity"
-                class="absolute left-3 top-3"
-              />
+      <div v-else-if="selectedAd" class="flex flex-col gap-4">
+        <Carousel
+          v-if="selectedAd.images.length"
+          :value="selectedAd.images"
+          :num-visible="1"
+          :num-scroll="1"
+          :circular="selectedAd.images.length > 1"
+          :show-navigators="selectedAd.images.length > 1"
+        >
+          <template #item="{ data }">
+            <div class="overflow-hidden rounded-xl bg-slate-100">
+              <img :src="data.url" :alt="selectedAd.title" class="max-h-72 w-full object-contain" />
             </div>
-
-            <div class="flex flex-1 flex-col gap-1 p-4">
-              <h2 class="truncate font-semibold text-slate-900">{{ ad.title }}</h2>
-              <p class="font-semibold text-slate-700">{{ formatPrice(ad.price) }}</p>
-
-              <p v-if="ad.location" class="mt-1 line-clamp-2 text-sm text-slate-500">
-                <i class="pi pi-map-marker mr-1 text-xs" />{{ ad.location }}
-              </p>
-
-              <div class="mt-auto flex items-center justify-between pt-3">
-                <span class="text-xs text-slate-400">
-                  <i class="pi pi-eye mr-1" />{{ ad.viewsCount }}
-                </span>
-                <Button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  text
-                  rounded
-                  aria-label="Excluir anúncio"
-                  @click="confirmDelete(ad, $event)"
-                />
-              </div>
-            </div>
-          </article>
-        </div>
-      </template>
-    </DataView>
-
-    <Dialog
-      v-model:visible="detailsVisible"
-      modal
-      dismissable-mask
-      :header="selectedAd?.title"
-      class="w-full max-w-2xl"
-    >
-      <div v-if="selectedAd" class="flex flex-col gap-4">
-        <div class="overflow-hidden rounded-xl bg-slate-100">
-          <img
-            v-if="coverImage(selectedAd)"
-            :src="coverImage(selectedAd)"
-            :alt="selectedAd.title"
-            class="max-h-72 w-full object-cover"
-          />
-          <div v-else class="flex h-48 w-full items-center justify-center text-slate-300">
-            <i class="pi pi-image text-5xl" />
-          </div>
+          </template>
+        </Carousel>
+        <div v-else class="flex h-48 w-full items-center justify-center rounded-xl bg-slate-100 text-slate-300">
+          <i class="pi pi-image text-5xl" />
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
           <Tag
-            :value="STATUS_META[selectedAd.status].label"
-            :severity="STATUS_META[selectedAd.status].severity"
+            :value="statusMeta(selectedAd.status).label"
+            :severity="statusMeta(selectedAd.status).severity"
           />
-          <Tag :value="CATEGORY_META[selectedAd.category]" severity="info" />
-          <Tag :value="TYPE_META[selectedAd.type]" severity="secondary" />
-          <Tag :value="CONDITION_META[selectedAd.condition]" severity="secondary" />
+          <Tag :value="selectedAd.category.name" severity="info" />
+          <Tag :value="typeLabel(selectedAd.type)" severity="secondary" />
+          <Tag :value="conditionLabel(selectedAd.condition)" severity="secondary" />
         </div>
 
         <p class="text-2xl font-semibold text-slate-900">{{ formatPrice(selectedAd.price) }}</p>
@@ -381,7 +387,7 @@ function deleteAd(ad: AdListItem): void {
         <dl class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt class="text-slate-500">Código</dt>
-            <dd class="font-medium text-slate-900">{{ selectedAd.id }}</dd>
+            <dd class="font-medium text-slate-900 break-all">{{ selectedAd.id }}</dd>
           </div>
           <div>
             <dt class="text-slate-500">Visualizações</dt>
@@ -401,8 +407,12 @@ function deleteAd(ad: AdListItem): void {
             <dd class="font-medium text-slate-900">{{ selectedAd.location ?? 'Não informada' }}</dd>
           </div>
           <div>
-            <dt class="text-slate-500">Criado em</dt>
-            <dd class="font-medium text-slate-900">{{ formatDate(selectedAd.createdAt) }}</dd>
+            <dt class="text-slate-500">Publicado em</dt>
+            <dd class="font-medium text-slate-900">{{ formatDateTime(selectedAd.createdAt) }}</dd>
+          </div>
+          <div v-if="showUpdatedAt">
+            <dt class="text-slate-500">Última atualização</dt>
+            <dd class="font-medium text-slate-900">{{ formatDateTime(selectedAd.updatedAt) }}</dd>
           </div>
         </dl>
       </div>

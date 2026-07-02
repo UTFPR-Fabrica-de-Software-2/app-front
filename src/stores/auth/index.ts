@@ -50,8 +50,18 @@ export const useAuthStore = defineStore('auth', {
         },
         (error: AxiosError) => {
           const { response } = error
-          console.log('response: ', response)
-          if (response?.status === HttpStatusCode.Unauthorized) this.$reset()
+          const { statusCode, message } = response?.data as unknown as {
+            statusCode?: number
+            message?: string
+          }
+          if (
+            response?.status === HttpStatusCode.Unauthorized ||
+            (statusCode &&
+              message &&
+              statusCode === HttpStatusCode.NotFound &&
+              message === 'User not found')
+          )
+            this.$reset()
           return Promise.reject(error)
         },
       )

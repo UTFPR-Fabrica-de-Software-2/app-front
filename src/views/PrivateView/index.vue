@@ -35,24 +35,27 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-100/70 lg:flex">
+  <div class="min-h-screen bg-[#f1f5f9] lg:flex">
     <Sidebar
       v-model:open="sidebarOpen"
       :user="userStore.user"
       :navigation="navigation"
-      title="Central administrativo"
-      subtitle="Sakai-inspired"
+      title="UTF-Store Admin"
+      subtitle=""
     />
 
-    <div class="flex min-h-full min-w-0 flex-1 flex-col">
-      <Navbar
-        :user="userStore.user"
-        title="Central administrativo"
-        @menu-click="sidebarOpen = true"
-        @logout="logout"
-      />
+    <div class="flex min-h-screen min-w-0 flex-1 flex-col">
+      <!-- Navbar visível apenas no mobile para abrir o menu -->
+      <div class="lg:hidden">
+        <Navbar
+          :user="userStore.user"
+          title="UTF-Store Admin"
+          @menu-click="sidebarOpen = true"
+          @logout="logout"
+        />
+      </div>
 
-      <main class="space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+      <main class="flex-1 space-y-6 p-4">
         <slot />
         <router-view />
       </main>

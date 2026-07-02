@@ -26,6 +26,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
+  logout: []
 }>()
 
 function closeSidebar(): void {
@@ -34,11 +35,20 @@ function closeSidebar(): void {
 </script>
 
 <template>
-  <aside class="hidden w-80 shrink-0 border-r border-slate-200 bg-white/95 lg:flex lg:flex-col">
-    <div class="flex h-full flex-col px-5 py-6">
-      <CardUser :user="props.user" />
+  <aside
+    class="hidden w-64 shrink-0 bg-white lg:flex lg:flex-col shadow-[1px_0_10px_rgba(0,0,0,0.05)] border-r border-slate-100 relative z-10"
+  >
+    <div class="flex h-full flex-col">
+      <div class="p-6">
+        <h2 class="text-xl font-bold text-slate-900 tracking-tight">{{ title }}</h2>
+      </div>
 
-      <nav class="mt-6 space-y-2">
+      <!-- Mantido conforme a regra de não remover elementos -->
+      <div class="px-5 mb-2 hidden">
+        <CardUser :user="props.user" />
+      </div>
+
+      <nav class="flex-1 px-4 space-y-1">
         <RouterLink
           v-for="item in props.navigation"
           :key="item.to"
@@ -49,40 +59,48 @@ function closeSidebar(): void {
           <a
             :href="href"
             @click="navigate"
-            class="group flex items-start gap-3 rounded-2xl border px-4 py-3 transition-colors"
+            class="group flex items-center gap-3 rounded-xl px-4 py-3 transition-colors"
             :class="
               isActive
-                ? 'border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm'
-                : 'border-transparent bg-transparent text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900'
+                ? 'bg-slate-100 text-slate-900 font-semibold'
+                : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-900 font-medium'
             "
           >
-            <i :class="[item.icon, 'mt-0.5 text-base']" />
-
-            <div class="min-w-0 flex-1">
-              <span class="block font-medium">{{ item.label }}</span>
-            </div>
-
-            <i
-              class="pi pi-chevron-right mt-1 text-xs text-inherit/50 transition-transform group-hover:translate-x-0.5"
-            />
+            <!-- Não renderizamos os ícones se não houver no print, mas os manteremos visualmente discretos -->
+            <span class="block">{{ item.label }}</span>
           </a>
         </RouterLink>
       </nav>
+
+      <div class="p-4 border-t border-slate-100">
+        <button
+          @click="emit('logout')"
+          class="flex items-center gap-3 w-full rounded-xl px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 font-medium transition-colors text-left"
+        >
+          <span class="block font-semibold">Logout</span>
+        </button>
+      </div>
     </div>
   </aside>
 
   <Drawer
     :visible="props.open"
     position="left"
-    class="w-full max-w-sm lg:hidden"
+    class="w-full max-w-[16rem] lg:hidden"
     :dismissable="true"
     :blockScroll="true"
     @update:visible="emit('update:open', $event)"
   >
-    <div class="flex h-full flex-col px-1 pb-2 pt-1">
-      <CardUser :user="props.user" />
+    <div class="flex h-full flex-col">
+      <div class="p-6">
+        <h2 class="text-xl font-bold text-slate-900 tracking-tight">{{ title }}</h2>
+      </div>
 
-      <nav class="mt-5 space-y-2">
+      <div class="px-5 mb-2">
+        <CardUser :user="props.user" />
+      </div>
+
+      <nav class="flex-1 px-4 space-y-1">
         <RouterLink
           v-for="item in props.navigation"
           :key="item.to"
@@ -98,24 +116,29 @@ function closeSidebar(): void {
                 closeSidebar()
               }
             "
-            class="group flex items-start gap-3 rounded-2xl border px-4 py-3 transition-colors"
+            class="group flex items-center gap-3 rounded-xl px-4 py-3 transition-colors"
             :class="
               isActive
-                ? 'border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm'
-                : 'border-transparent bg-transparent text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900'
+                ? 'bg-slate-100 text-slate-900 font-semibold'
+                : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-900 font-medium'
             "
           >
-            <i :class="[item.icon, 'mt-0.5 text-base']" />
-
-            <span class="min-w-0 flex-1">
-              <span class="block font-medium">{{ item.label }}</span>
-              <span class="mt-0.5 block text-sm text-inherit/70">{{ item.description }}</span>
-            </span>
-
-            <i class="pi pi-chevron-right mt-1 text-xs text-inherit/50" />
+            <span class="block">{{ item.label }}</span>
+            <span v-if="item.description" class="mt-0.5 block text-xs text-inherit/70">{{
+              item.description
+            }}</span>
           </a>
         </RouterLink>
       </nav>
+
+      <div class="p-4 border-t border-slate-100">
+        <button
+          @click="emit('logout')"
+          class="flex items-center gap-3 w-full rounded-xl px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 font-medium transition-colors text-left"
+        >
+          <span class="block font-semibold">Logout</span>
+        </button>
+      </div>
     </div>
   </Drawer>
 </template>

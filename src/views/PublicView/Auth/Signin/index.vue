@@ -59,10 +59,14 @@ function onFormSubmit({ valid, values }: FormSubmitEvent) {
 </script>
 
 <template>
-  <Card class="w-full max-w-md shadow-lg">
+  <Card class="w-full max-w-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-none rounded-2xl p-4">
     <template #title>
-      <h2 class="text-2xl font-bold text-slate-900 text-center">Admin Login</h2>
-      <h5 class="text-lg font-semibold text-slate-700 text-center">UTF-Store Admin Dashboard</h5>
+      <div class="mb-4">
+        <h2 class="text-2xl font-bold text-slate-900 text-center tracking-tight">Admin Login</h2>
+        <h5 class="text-sm font-medium text-slate-500 text-center mt-1">
+          UTF-Store Admin Dashboard
+        </h5>
+      </div>
     </template>
 
     <template #content>
@@ -94,7 +98,11 @@ function onFormSubmit({ valid, values }: FormSubmitEvent) {
             }}</Message>
           </section>
         </FormField>
-        <Button type="submit" severity="success" label="Acessar" />
+        <Button
+          type="submit"
+          label="Acessar"
+          class="w-full bg-slate-900 hover:bg-slate-800 border-none text-white rounded-xl py-3 mt-4"
+        />
       </Form>
     </template>
   </Card>

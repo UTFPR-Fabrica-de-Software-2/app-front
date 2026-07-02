@@ -20,7 +20,7 @@ function getInitials(): string {
 
 <template>
   <div class="max-w-12 max-h-12" v-bind="$attrs">
-    <img v-if="srcImg" :src="srcImg" :alt="`img-${username}`" />
+    <img v-if="srcImg" :src="srcImg" :alt="`img-${username}`" :class="$attrs?.class" />
     <div
       v-else
       class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-sm text-slate-700"
